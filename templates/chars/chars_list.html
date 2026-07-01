@@ -1,0 +1,23 @@
+<h1>Erha characters</h1>
+<ol>
+    {% for i in chars %}
+
+    <li>
+        <img src="{{ i.photo.url }}" alt="" width="250" height="300">
+        <p>Name: {{ i.name }}</p>
+        <p>Was published: {{ i.created_at }}</p>
+        <p><a href="/chars_list/{{ i.id }}/">More</a></p>
+    </li>
+    {% endfor %}
+</ol>
+
+<h2>Chapter 1</h2>
+<ul>
+    {% for n in novel %}
+    <li>
+        <p>{{ n.title }}</p>
+        <p>{{ n.passage }}</p>
+        <p>{{ n.created_at }}</p>
+    </li>
+    {% endfor %}
+</ul>

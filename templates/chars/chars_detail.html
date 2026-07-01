@@ -1,0 +1,11 @@
+<h1>Name: {{ char_id.name }}</h1>
+<img src="{{ char_id.photo.url }}" alt="" width="250" height="300">
+<p>Age: {{ char_id.age }}</p>
+<p>Organization: {{ char_id.organization }}</p>
+{% if char_id.description %}
+    <p>Background: {{ char_id.description }}</p>
+{% else %}
+    <p>Background: The description was not added!</p>
+{% endif %}
+<p>Weapon: {{ char_id.weapon }}</p>
+<p>Дата создания поста: {{ char_id.created_at }}</p>

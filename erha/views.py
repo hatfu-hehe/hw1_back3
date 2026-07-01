@@ -1,4 +1,24 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from . import models
+
+def char_detail_view(request, id):
+    if request.method == 'GET':
+        char_id = get_object_or_404(models.CharsErha, id=id)
+    return render(request, 'chars/chars_detail.html', {'char_id':char_id})
+
+
+def char_erha_view(request):
+    if request.method == 'GET':
+        chars = models.CharsErha.objects.all().order_by('-id')
+        novel = models.Fragments.objects.all().order_by('-id')
+    return render(request, 'chars/chars_list.html', 
+            {
+            'chars': chars, 
+            'novel': novel,
+            }
+    )
+
+
 
 def char_erha(request):
     if request.method == 'GET':
