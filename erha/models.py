@@ -15,9 +15,6 @@ class Fragments(models.Model):
     
 
 
-
-
-
 class CharsErha(models.Model):
     photo = models.ImageField(upload_to='mitban_nvl/', verbose_name="insert character's photo")
     name = models.CharField(max_length=30, verbose_name="enter character's name")
@@ -35,7 +32,7 @@ class CharsErha(models.Model):
     description = models.TextField(verbose_name="Enter character's background")
     weapon = models.CharField(max_length=100, verbose_name="Enter character's weapon")
     created_at = models.DateField(auto_now_add=True)
-    
+    views = models.PositiveIntegerField(default=0, null=True)
     
     class Meta:
         verbose_name = "character"

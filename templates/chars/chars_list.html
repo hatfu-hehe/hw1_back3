@@ -1,4 +1,11 @@
 <h1>Erha characters</h1>
+
+
+<form action="/search/" method="GET">
+    <input type="text" type="search" name="s" placeholder="Character's name">
+    <button type="submit">Search</button>
+</form>
+
 <ol>
     {% for i in chars %}
 
@@ -11,6 +18,27 @@
     {% endfor %}
 </ol>
 
+
+<div class="pagination">
+        <span class="step-links">
+            {% if part.has_previous %}
+                <a href="?page=1">&laquo; First</a>
+                <a href="?page={{ part.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ part.number }} out of {{ part.paginator.num_pages }}.
+            </span>
+
+            {% if part.has_next %}
+                <a href="?page={{ part.next_page_number }}">Next</a>
+                <a href="?page={{ part.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+<p>Кол-во просмотров поста - {{ char_id.views }}</p>
+
 <h2>Chapter 1</h2>
 <ul>
     {% for n in novel %}
@@ -21,3 +49,5 @@
     </li>
     {% endfor %}
 </ul>
+
+
