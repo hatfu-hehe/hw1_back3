@@ -3,66 +3,66 @@ from . import models
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import F
+from django.views import generic
 
 
-def char_detail_view(request, id):
-    if request.method == 'GET':
-        char_id = get_object_or_404(models.CharsErha, id=id)
-
+class CharDetailView(generic.DetailView):
+    template_name = 'chars/chars_detail.html'
+    context_object_name = 'char_id'
+    pk_url_kwarg = 'id'
+    model = models.CharsErha
+    
+    def get_object(self, queryset = None):
+        obj = super().get_object(queryset)
+        request = self.request
         views_blog = request.session.get('viewed_blog', [])
-
-        if id not in views_blog:
-            char_id.views = F("views")+1
-            char_id.save()
-            char_id.refresh_from_db()
-        views_blog.append(id)
-        request.session['viewed_blog'] = views_blog
-
-
-    return render(request, 'chars/chars_detail.html', {'char_id': char_id})
+        
+        if obj.pk not in views_blog:
+            self.model.objects.filter(pk=obj.pk).update(views=F('views')+1)
+            views_blog.append(obj.pk)
+            request.session['viewed_blog'] = views_blog
+            obj.refresh_from_db()
+        return obj 
 
 
 
-def search_view(request):
-    query = request.GET.get('s', '')
-    if query:
-        character = models.CharsErha.objects.filter(name__icontains=query)
-        if not character.exists():
-            return HttpResponse('No such name here')
-    else:
-        return HttpResponse('No such name here')
+class SearchView(generic.ListView):
+    template_name = 'chars/chars_detail.html'
+    model = models.CharsErha
+    context_object_name = 'char'
+    
+    def get_queryset(self):
+        return self.model.objects.filter(name__icontains=self.request.GET.get('s'))
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['s'] = self.request.GET.get('s')
+        return context 
 
 
-def char_detail_view(request, id):
-    if request.method == 'GET':
-        char_id = get_object_or_404(models.CharsErha, id=id)
-    return render(request, 'chars/chars_detail.html', {'char_id':char_id})
+class CharErhaView(generic.ListView):
+    template_name = 'chars/chars_list.html'
+    model = models.CharsErha
+    paginate_by = 2
+    ordering = ['-id']
+    context_object_name = 'chars'
+    
+    def get_queryset(self):
+        return self.model.objects.all()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['part'] = context['page_obj']
+        return context
 
 
-def char_erha_view(request):
-    if request.method == 'GET':
-        chars = models.CharsErha.objects.all().order_by('-id')
-        novel = models.Fragments.objects.all().order_by('-id')
-
-        paginator = Paginator(chars, 2)
-        page = request.GET.get('page')
-        page_obj = paginator.get_page(page)
-
-    return render(request, 'chars/chars_list.html',
-        {
-            'chars': page_obj,
-            'part': page_obj,
-            'novel': novel,
-        }
-    )
-
-
-
-def char_erha(request):
-    if request.method == 'GET':
-        chars = {
-            'title': "Erha's characters",
-            'characters':[
+class CharErha(generic.TemplateView):
+    template_name = 'char1.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Erha's characters"
+        context['chars'] = [
                 {
             'name':"Chu Wanning",
             'age': 32,
@@ -76,18 +76,21 @@ def char_erha(request):
             'element': ["Fire", "Wood"],
             'weapon': ["Jiangui", "Bugui"],
             'organization': "Sisheng Peak"
-                },
-            ]
-        }
-    return render(request, 'char1.html', chars )
+                }
+        ]
+        return context
 
-def info(request):
-    if request.method == "GET":
-            me1 = {
+
+class Info(generic.TemplateView):
+    template_name = 'me1.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
             'full_name': "Kirkeeva Amina",
             'age': 18,
             'nationality': 'kyrgyz, uighur',
             'height': '175',
             'hobby': ['reading', 'drawing', 'academics', 'gaming']
-        }
-    return render(request, 'me1.html', me1)
+        })
+        return context 
